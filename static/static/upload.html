@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Upload Book Image</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #bgVideo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            filter: brightness(60%);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<video autoplay muted loop id="bgVideo">
+    <source src="video4.mp4" type="video/mp4">
+</video>
+<div class="overlay"></div>
+
+<div class="container">
+    <h2>Upload Book Image (Test)</h2>
+    <form id="uploadForm" enctype="multipart/form-data" method="post">
+        <div class="form-group">
+            <label for="bookId">Book ID:</label>
+            <input type="number" id="bookId" value="1" />
+        </div>
+        <div class="form-group">
+            <label for="file">Select Image:</label>
+            <input type="file" id="file" name="file" />
+        </div>
+        <button type="submit">Upload</button>
+    </form>
+</div>
+
+<script>
+    const BACKEND = "http://localhost:8081";
+
+    document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const id = document.getElementById('bookId').value;
+        const fileInput = document.getElementById('file');
+
+        if (!fileInput.files.length) {
+            alert('Please choose a file');
+            return;
+        }
+
+        const fd = new FormData();
+        fd.append('file', fileInput.files[0]);
+
+        try {
+            const res = await fetch(`${BACKEND}/api/books/upload`, {
+                method: 'POST',
+                body: fd
+            });
+            const text = await res.text();
+            alert('Response: ' + text);
+            console.log('Upload response:', text);
+        } catch (err) {
+            alert('Upload error: ' + err.message);
+        }
+    });
+</script>
+</body>
+</html>

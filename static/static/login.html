@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartLibrary - User Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --accent: #ff9e00;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4bb543;
+            --error: #ff3333;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient-shift 15s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Animated Background Elements */
+        .background-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        /* Floating Books */
+        .floating-book {
+            position: absolute;
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            animation: float-book 25s infinite linear;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes float-book {
+            0% {
+                transform: translateY(100vh) translateX(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100vw) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Bubbles */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float-bubble 20s infinite linear;
+        }
+
+        @keyframes float-bubble {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Sparkles */
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: sparkle 3s infinite linear;
+            box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Pulse Rings */
+        .pulse-ring {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: pulse-ring 4s infinite linear;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            display: flex;
+            width: 900px;
+            max-width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: fadeIn 0.8s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            background-size: 400%;
+            border-radius: 22px;
+            z-index: -1;
+            animation: glowing 20s linear infinite;
+            opacity: 0.7;
+            filter: blur(5px);
+        }
+
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+
+        .welcome-section {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.9), rgba(114, 9, 183, 0.9));
+            color: white;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: background-pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes background-pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            z-index: 1;
+            animation: logo-float 6s ease-in-out infinite;
+        }
+
+        @keyframes logo-float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .logo-icon {
+            font-size: 2.8rem;
+            margin-right: 15px;
+            color: var(--accent);
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            animation: icon-pulse 2s infinite;
+        }
+
+        @keyframes icon-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .logo-text {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            line-height: 1.2;
+            z-index: 1;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            animation: text-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes text-glow {
+            0%, 100% { text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); }
+            50% { text-shadow: 0 2px 20px rgba(255, 255, 255, 0.5); }
+        }
+
+        .welcome-section p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            z-index: 1;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .highlight-text {
+            background: linear-gradient(135deg, var(--accent), #ffdd57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+            animation: highlight-pulse 2s infinite;
+        }
+
+        @keyframes highlight-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .form-section {
+            flex: 1;
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: white;
+            position: relative;
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 70%, rgba(67, 97, 238, 0.03) 100%);
+            pointer-events: none;
+            animation: form-shimmer 8s infinite linear;
+        }
+
+        @keyframes form-shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .form-container {
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-header {
+            margin-bottom: 35px;
+            text-align: center;
+        }
+
+        .form-title {
+            font-size: 2.2rem;
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: title-shimmer 3s infinite;
+        }
+
+        @keyframes title-shimmer {
+            0%, 100% { background-position: -200% 0; }
+            50% { background-position: 200% 0; }
+        }
+
+        .form-subtitle {
+            color: var(--gray);
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 18px;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border: 2px solid #e8f0fe;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background-color: #f8fafc;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+            outline: none;
+            transform: translateY(-2px);
+            animation: input-pulse 1.5s infinite;
+        }
+
+        @keyframes input-pulse {
+            0%, 100% { box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1); }
+            50% { box-shadow: 0 0 0 6px rgba(67, 97, 238, 0.2); }
+        }
+
+        .form-control:focus + i {
+            color: var(--secondary);
+            transform: translateY(-50%) scale(1.1);
+            animation: icon-bounce 0.5s;
+        }
+
+        @keyframes icon-bounce {
+            0%, 100% { transform: translateY(-50%) scale(1.1); }
+            50% { transform: translateY(-50%) scale(1.3); }
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
+            accent-color: var(--primary);
+            transform: scale(1.2);
+        }
+
+        .forgot-password a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .forgot-password a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--secondary);
+            transition: width 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: var(--secondary);
+        }
+
+        .forgot-password a:hover::after {
+            width: 100%;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(67, 97, 238, 0.5);
+            animation: btn-glow 1.5s infinite;
+        }
+
+        @keyframes btn-glow {
+            0%, 100% { box-shadow: 0 12px 30px rgba(67, 97, 238, 0.5); }
+            50% { box-shadow: 0 12px 40px rgba(67, 97, 238, 0.8); }
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: button-loading-spinner 1s ease infinite;
+        }
+
+        .switch-form {
+            text-align: center;
+            margin-top: 30px;
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        .switch-form a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .switch-form a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--secondary);
+            transition: width 0.3s ease;
+        }
+
+        .switch-form a:hover {
+            color: var(--secondary);
+        }
+
+        .switch-form a:hover::after {
+            width: 100%;
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .message.error {
+            background-color: rgba(255, 51, 51, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(255, 51, 51, 0.2);
+        }
+
+        .message.success {
+            background-color: rgba(75, 181, 67, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(75, 181, 67, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes button-loading-spinner {
+            from { transform: rotate(0turn); }
+            to { transform: rotate(1turn); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .welcome-section {
+                padding: 40px 30px;
+            }
+
+            .form-section {
+                padding: 40px 30px;
+            }
+
+            .welcome-section h1 {
+                font-size: 2rem;
+            }
+
+            .logo-text {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Animated Background Elements -->
+<div class="background-elements" id="backgroundElements"></div>
+
+<div class="container">
+    <div class="welcome-section">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-book-reader"></i>
+            </div>
+            <div class="logo-text">SmartLibrary</div>
+        </div>
+        <h1>Your Personal Library Experience</h1>
+        <p>Access thousands of books and discover new favorites with our intuitive platform.</p>
+        <p>Join <span class="highlight-text">10,000+ readers</span> exploring our vast collection of books and resources.</p>
+    </div>
+
+    <div class="form-section">
+        <div class="form-container">
+            <div class="form-header">
+                <h2 class="form-title">Welcome Back</h2>
+                <p class="form-subtitle">Sign in to continue your reading journey</p>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" class="form-control" placeholder="Username or email" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" class="form-control" placeholder="Password" required>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <div class="forgot-password">
+                        <a href="#">Forgot password?</a>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">Sign In</button>
+
+                <div id="message" class="message"></div>
+            </form>
+
+            <div class="switch-form">
+                <span>Don't have an account?</span>
+                <a href="register.html">Sign up now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Create lively background elements
+    function createBackgroundElements() {
+        const container = document.getElementById('backgroundElements');
+
+        // Create floating books
+        const bookIcons = ['📚', '📖', '📕', '📗', '📘', '📙', '🔖'];
+        for (let i = 0; i < 12; i++) {
+            const book = document.createElement('div');
+            book.className = 'floating-book';
+            book.innerHTML = bookIcons[Math.floor(Math.random() * bookIcons.length)];
+
+            const size = Math.random() * 2 + 1;
+            const left = Math.random() * 100;
+            const duration = Math.random() * 30 + 20;
+            const delay = Math.random() * 15;
+
+            book.style.fontSize = `${size}rem`;
+            book.style.left = `${left}vw`;
+            book.style.animationDuration = `${duration}s`;
+            book.style.animationDelay = `${delay}s`;
+
+            container.appendChild(book);
+        }
+
+        // Create bubbles
+        for (let i = 0; i < 25; i++) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+
+            const size = Math.random() * 100 + 20;
+            const left = Math.random() * 100;
+            const duration = Math.random() * 25 + 15;
+            const delay = Math.random() * 10;
+
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${left}vw`;
+            bubble.style.animationDuration = `${duration}s`;
+            bubble.style.animationDelay = `${delay}s`;
+
+            container.appendChild(bubble);
+        }
+
+        // Create sparkles
+        for (let i = 0; i < 50; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+
+            const left = Math.random() * 100;
+            const top = Math.random() * 100;
+            const duration = Math.random() * 3 + 2;
+            const delay = Math.random() * 5;
+
+            sparkle.style.left = `${left}vw`;
+            sparkle.style.top = `${top}vh`;
+            sparkle.style.animationDuration = `${duration}s`;
+            sparkle.style.animationDelay = `${delay}s`;
+
+            container.appendChild(sparkle);
+        }
+
+        // Create pulse rings
+        for (let i = 0; i < 8; i++) {
+            const ring = document.createElement('div');
+            ring.className = 'pulse-ring';
+
+            const size = Math.random() * 200 + 50;
+            const left = Math.random() * 100;
+            const top = Math.random() * 100;
+            const duration = Math.random() * 6 + 3;
+            const delay = Math.random() * 8;
+
+            ring.style.width = `${size}px`;
+            ring.style.height = `${size}px`;
+            ring.style.left = `${left}vw`;
+            ring.style.top = `${top}vh`;
+            ring.style.animationDuration = `${duration}s`;
+            ring.style.animationDelay = `${delay}s`;
+
+            container.appendChild(ring);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        createBackgroundElements();
+
+        const loginForm = document.getElementById('loginForm');
+        const messageDiv = document.getElementById('message');
+        const submitBtn = document.getElementById('submitBtn');
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Simple validation
+            if (!username || !password) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+
+            // Show loading state
+            submitBtn.classList.add('btn-loading');
+            submitBtn.disabled = true;
+
+            // Simulate login process
+            showMessage('Signing you in...', 'success');
+
+            // In a real application, you would send this data to your server
+            setTimeout(function() {
+                // For demo purposes, check if credentials match a simple pattern
+                if (username.length >= 3 && password.length >= 6) {
+                    showMessage('Login successful! Redirecting...', 'success');
+
+                    // Redirect to books page after successful login
+                    setTimeout(function() {
+                        window.location.href = 'books.html';
+                    }, 1500);
+                } else {
+                    showMessage('Invalid username or password. Please try again.', 'error');
+                }
+
+                // Reset button
+                submitBtn.classList.remove('btn-loading');
+                submitBtn.disabled = false;
+            }, 2000);
+        });
+
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+
+            // Hide message after 5 seconds for errors, keep success messages until redirect
+            if (type === 'error') {
+                setTimeout(function() {
+                    messageDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Add enter key support
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loginForm.dispatchEvent(new Event('submit'));
+            }
+        });
+    });
+</script>
+</body>
+</html>

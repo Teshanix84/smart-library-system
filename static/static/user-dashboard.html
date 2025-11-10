@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Smart Library — Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<!-- Background video -->
+<video autoplay muted loop id="bgVideo">
+    <source src="video4.mp4" type="video/mp4">
+</video>
+
+<div class="card" style="width:420px;">
+    <h2>Smart Library — Dashboard</h2>
+    <p><strong>User ID:</strong> <span id="userId">—</span></p>
+    <p><strong>Name:</strong> <span id="userName">—</span></p>
+    <p><strong>Email:</strong> <span id="userEmail">—</span></p>
+
+    <button id="booksBtn" style="margin-top:18px;">📚 Go to Books</button>
+    <button id="logoutBtn" style="margin-top:10px; background:#ff4b4b;">Logout</button>
+</div>
+
+<script>
+    // ✅ Load user info
+    const user = JSON.parse(localStorage.getItem('loggedInUser'));
+    if (!user) {
+        window.location.href = 'login.html';
+    } else {
+        const uid = user.id || user.userId || user.ID || 'N/A';
+        const uname = user.name || user.username || user.fullName || 'User';
+        const uemail = user.email || user.mail || '—';
+
+        document.getElementById('userId').textContent = uid;
+        document.getElementById('userName').textContent = uname;
+        document.getElementById('userEmail').textContent = uemail;
+    }
+
+    // ✅ Button actions
+    document.getElementById('booksBtn').addEventListener('click', () => {
+        window.location.href = 'books.html';
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('loggedInUser');
+        window.location.href = 'login.html';
+    });
+</script>
+</body>
+</html>

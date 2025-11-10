@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Admin Login | Smart Library</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+        :root {
+            --bg-overlay: rgba(0, 0, 0, 0.45);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.25);
+            --accent: #0ea5e9;
+            --text: #f9fafb;
+            --muted: #d1d5db;
+            --danger: #ef4444;
+            --success: #16a34a;
+            font-family: "Poppins", system-ui, sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #bgVideo {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--bg-overlay);
+            z-index: -1;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 400px;
+            padding: 32px;
+            border-radius: 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px) saturate(160%);
+            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: var(--text);
+            animation: fadeIn 1s ease;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 0 0 10px;
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        p.lead {
+            text-align: center;
+            color: var(--muted);
+            margin: 0 0 25px;
+        }
+
+        .field {
+            margin-bottom: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        input {
+            height: 44px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder { color: #cbd5e1; }
+
+        input:focus {
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.25);
+        }
+
+        .toggle {
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .btn {
+            width: 100%;
+            height: 45px;
+            border: none;
+            border-radius: 10px;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 5px;
+            transition: 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #0284c7;
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+        }
+
+        .small {
+            font-size: 13px;
+            color: var(--muted);
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .error {
+            color: var(--danger);
+            text-align: center;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+<video autoplay muted loop id="bgVideo">
+    <source src="video3.mp4" type="video/mp4">
+</video>
+<div class="overlay"></div>
+
+<div class="card">
+    <h1>Admin Login</h1>
+    <p class="lead">Access Smart Library Dashboard</p>
+
+    <div class="field">
+        <label for="username">Username</label>
+        <input id="username" type="text" placeholder="Enter username">
+    </div>
+
+    <div class="field">
+        <label for="password">Password</label>
+        <div style="display: flex; gap: 8px;">
+            <input id="password" type="password" placeholder="Enter password" style="flex:1;">
+            <button id="showPwd" class="toggle">Show</button>
+        </div>
+    </div>
+
+    <button id="loginBtn" class="btn">Login</button>
+    <p id="message" class="error"></p>
+
+    <p class="small">Don't have an account?
+        <a href="admin-register.html" class="link">Register here</a>
+    </p>
+</div>
+
+<script src="admin-auth.js"></script>
+<script>
+    // Toggle password visibility
+    document.getElementById('showPwd').addEventListener('click', e => {
+        e.preventDefault();
+        const p = document.getElementById('password');
+        if (p.type === 'password') { p.type = 'text'; e.target.textContent = 'Hide'; }
+        else { p.type = 'password'; e.target.textContent = 'Show'; }
+    });
+
+    // Handle login
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+        await authLogin({
+            username: document.getElementById('username').value,
+            password: document.getElementById('password').value
+        });
+    });
+
+    // Allow Enter key to submit
+    ['username', 'password'].forEach(id => {
+        document.getElementById(id).addEventListener('keydown', e => {
+            if (e.key === 'Enter') document.getElementById('loginBtn').click();
+        });
+    });
+</script>
+</body>
+</html>

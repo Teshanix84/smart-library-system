@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Admin Register • Smart Library</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        :root{
+            --bg-1: #0f172a;
+            --bg-2: #071029;
+            --glass: rgba(255,255,255,0.06);
+            --accent: #7dd3fc;
+            --accent-2: #0284c7;
+            --muted: #9ca3af;
+            --text: #e6eef8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --radius: 14px;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%;margin:0}
+        body{
+            display:grid;
+            place-items:center;
+            background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+            color:var(--text);
+            -webkit-font-smoothing:antialiased;
+            padding:24px;
+        }
+
+        #bgVideo{position:fixed;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;filter:brightness(.45) saturate(.9);}
+        .bg-vignette{position:fixed;inset:0;background:linear-gradient(180deg,rgba(2,6,23,0.35),rgba(2,6,23,0.55));z-index:-2;}
+
+        .wrapper{width:100%;max-width:980px;display:grid;grid-template-columns:1fr 440px;gap:28px;align-items:center;}
+        @media(max-width:920px){.wrapper{grid-template-columns:1fr;max-width:540px;}}
+
+        .left{
+            min-height:420px;background:linear-gradient(135deg,rgba(45,55,72,0.14),rgba(2,6,23,0.02));
+            border-radius:var(--radius);padding:36px;
+            display:flex;flex-direction:column;justify-content:center;gap:18px;
+            border:1px solid rgba(255,255,255,0.02);backdrop-filter:blur(8px) saturate(120%);
+            box-shadow:0 10px 40px rgba(2,6,23,0.6);
+        }
+
+        .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,rgba(125,211,252,0.15),rgba(2,132,199,0.08));display:grid;place-items:center;}
+        .logo svg{width:36px;height:36px;color:var(--accent);}
+
+        .card{
+            background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+            padding:28px;border-radius:16px;border:1px solid rgba(255,255,255,0.03);
+            box-shadow:0 10px 40px rgba(2,6,23,0.6);
+        }
+
+        form{display:flex;flex-direction:column;gap:12px;}
+        label{font-size:13px;color:var(--muted);}
+        .input{display:flex;align-items:center;gap:10px;background:var(--glass);padding:10px;border-radius:10px;}
+        .input input{background:transparent;border:0;outline:0;color:var(--text);font-size:15px;width:100%;}
+        .btn{
+            height:48px;border:0;border-radius:10px;cursor:pointer;font-weight:700;font-size:15px;
+            background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#042a38;
+            box-shadow:0 12px 30px rgba(2,132,199,0.12);
+        }
+        .btn:disabled{opacity:.7;cursor:progress;}
+        .secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.02);height:44px;border-radius:10px;font-weight:600;}
+        .message{padding:10px 12px;border-radius:10px;font-size:13px;display:none;}
+        .message.error{background:rgba(239,68,68,0.08);color:var(--danger);display:block;}
+        .message.success{background:rgba(16,185,129,0.06);color:var(--success);display:block;}
+        .meta{text-align:center;color:var(--muted);font-size:13px;margin-top:12px;}
+        .meta a{color:var(--accent);text-decoration:none;font-weight:700;}
+    </style>
+</head>
+<body>
+<video id="bgVideo" autoplay muted loop playsinline aria-hidden="true">
+    <source src="video3.mp4" type="video/mp4">
+</video>
+<div class="bg-vignette"></div>
+
+<div class="wrapper">
+    <section class="left">
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19.2V6.8a1 1 0 0 1 .6-.9l7-3.2a1 1 0 0 1 .8 0l7 3.2a1 1 0 0 1 .6.9V19.2"/><path d="M7 8.5v11M17 8.5v11"/></svg>
+        </div>
+        <h2>Smart Library • Create Admin Account</h2>
+        <p class="lead">Register a new admin to manage the Smart Library dashboard securely.</p>
+    </section>
+
+    <aside class="card" aria-label="Admin registration form">
+        <h3>Create your account</h3>
+        <p class="small">Fill in the details below to register a new admin user</p>
+
+        <form id="registerForm" autocomplete="on" novalidate>
+            <div class="field">
+                <label for="regUsername">Username</label>
+                <div class="input">
+                    <input id="regUsername" name="username" type="text" placeholder="e.g., librarian01" required />
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="regEmail">Email</label>
+                <div class="input">
+                    <input id="regEmail" name="email" type="email" placeholder="admin@example.com" required />
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="regPassword">Password</label>
+                <div class="input">
+                    <input id="regPassword" name="password" type="password" placeholder="••••••••" required />
+                </div>
+            </div>
+
+            <button id="registerBtn" class="btn" type="submit">Create Account</button>
+
+            <div id="registerMsg" class="message" role="status" aria-live="polite"></div>
+
+            <p class="meta">Already have an account? <a href="admin-login.html">Sign in</a></p>
+        </form>
+    </aside>
+</div>
+
+<script src="admin-auth.js"></script>
+<script>
+    document.getElementById("registerForm").addEventListener("submit", function(e){
+        e.preventDefault();
+        handleRegister();
+    });
+</script>
+</body>
+</html>

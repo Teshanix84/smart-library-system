@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Smart Library — Admin Panel</title>
+    <style>
+        :root {
+            --accent: #6c63ff;
+            --muted: #d1d5db;
+            --danger: #ff4d6d;
+            --radius: 14px;
+            --blur: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Poppins', system-ui, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* 🎥 Background video */
+        video.bgVideo {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            filter: brightness(0.4);
+        }
+
+        /* 💎 Glassmorphism base style */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(var(--blur));
+            -webkit-backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius);
+        }
+
+        .wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 16px 24px;
+        }
+
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: white;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.6);
+        }
+
+        h1 {
+            font-size: 1.3rem;
+            margin: 0;
+            color: #fff;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn.primary {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: #fff;
+        }
+
+        .btn.warn {
+            background: linear-gradient(135deg, #ff6b6b, #ff3b3b);
+            color: #fff;
+        }
+
+        .btn.ghost {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        /* Search & filter area */
+        .searchRow {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        input[type=text],
+        input[type=number],
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: var(--radius);
+            border: none;
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        select {
+            color: #fff;
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Table styling */
+        .card {
+            padding: 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #fff;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        th {
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        img.thumb {
+            width: 56px;
+            height: 77px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 100;
+        }
+
+        .modalContent {
+            width: 600px;
+            padding: 20px;
+        }
+
+        .formRow {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .previewImg {
+            width: 90px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 10px;
+        }
+
+        @media (max-width:720px){
+            .formRow{grid-template-columns:1fr}
+            .modalContent{width:95%}
+        }
+    </style>
+</head>
+<body>
+
+<!-- 🎥 Background video -->
+<video class="bgVideo" autoplay muted loop playsinline>
+    <source src="video3.mp4" type="video/mp4">
+</video>
+
+<div class="wrap">
+    <header class="glass">
+        <div class="brand">
+            <div class="logo">SL</div>
+            <div>
+                <h1>Smart Library — Admin</h1>
+                <div class="muted">Manage books, borrows and inventory</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn ghost" id="logoutBtn">Logout</button>
+            <button class="btn primary" id="borrowMgmtBtn">📘 Borrow Management</button>
+        </div>
+    </header>
+
+    <div class="searchRow">
+        <div style="flex:1" class="card glass">
+            <div style="display:flex;gap:10px;align-items:center">
+                <input id="searchInput" type="text" placeholder="Search by title, author, category...">
+                <select id="filterYear" aria-label="Filter by year">
+                    <option value="">All years</option>
+                </select>
+                <button class="btn ghost" id="clearFilters">Clear</button>
+            </div>
+        </div>
+
+        <button class="btn primary" id="addBookBtn">+ Add Book</button>
+    </div>
+
+    <div class="card glass">
+        <table id="booksTable" aria-live="polite">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Photo</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Category</th>
+                <th>Year</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="booksBody">
+            <tr><td colspan="7" class="muted">Loading books…</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="modal" class="modal" style="display:none">
+    <div class="modalContent glass">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <h3 id="formTitle">Add New Book</h3>
+            <button class="btn ghost" id="closeModal">✖</button>
+        </div>
+
+        <input type="hidden" id="bookId">
+        <div class="formRow">
+            <input type="text" id="title" placeholder="Book Title">
+            <input type="text" id="author" placeholder="Author">
+        </div>
+        <div class="formRow">
+            <input type="text" id="category" placeholder="Category">
+            <input type="number" id="year" placeholder="Publication Year">
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:10px">
+            <input type="file" id="imageFile" accept="image/*">
+            <img id="previewImg" class="previewImg" style="display:none">
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end">
+            <button class="btn ghost" id="cancelBtn">Cancel</button>
+            <button class="btn primary" id="saveBtn">Save Book</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast" style="display:none"></div>
+
+<script>
+    // 📘 Configuration — your API base path
+    const API_BASE = 'http://localhost:8081/api/books';
+
+    const $ = id => document.getElementById(id);
+    function showToast(msg, timeout=3000){
+        const t=$('toast'); t.textContent=msg; t.style.display='block';
+        clearTimeout(t._t); t._t=setTimeout(()=>t.style.display='none',timeout);
+    }
+
+    const modal = $('modal');
+    function openForm(mode='add', data=null){
+        $('formTitle').textContent = mode==='add' ? 'Add New Book' : 'Edit Book';
+        modal.style.display='flex';
+        if(data){
+            $('bookId').value=data.id;
+            $('title').value=data.title||'';
+            $('author').value=data.author||'';
+            $('category').value=data.category||'';
+            $('year').value=data.publicationYear||'';
+            if(data.imageUrl){ showPreview(data.imageUrl); }
+        }else{
+            $('bookId').value=''; $('title').value=''; $('author').value='';
+            $('category').value=''; $('year').value=''; hidePreview();
+        }
+    }
+    function closeForm(){ modal.style.display='none'; }
+
+    function showPreview(src){ const img=$('previewImg'); img.src=src; img.style.display='block'; }
+    function hidePreview(){ $('previewImg').style.display='none'; }
+
+    let BOOKS=[];
+    async function loadBooks(){
+        const tbody=$('booksBody'); tbody.innerHTML='<tr><td colspan="7" class="muted">Loading books…</td></tr>';
+        try{
+            const res=await fetch(API_BASE);
+            if(!res.ok) throw new Error('Failed to fetch');
+            BOOKS=await res.json();
+            renderBooks(BOOKS);
+            populateYearFilter(BOOKS);
+        }catch(e){ tbody.innerHTML=`<tr><td colspan="7" class="muted">Error loading books — ${e.message}</td></tr>`; }
+    }
+
+    function renderBooks(list){
+        const tbody=$('booksBody');
+        if(!list.length){ tbody.innerHTML='<tr><td colspan="7" class="muted">No books found</td></tr>'; return; }
+        tbody.innerHTML='';
+        list.forEach(book=>{
+            const row=document.createElement('tr');
+            row.innerHTML=`
+        <td>${book.id}</td>
+        <td><img class="thumb" src="${book.imageUrl || 'images/default-book.png'}" alt="${escapeHtml(book.title)}"></td>
+        <td>${escapeHtml(book.title)}</td>
+        <td>${escapeHtml(book.author)}</td>
+        <td>${escapeHtml(book.category)}</td>
+        <td>${book.publicationYear || ''}</td>
+        <td><div class="actions">
+          <button class="btn ghost" data-action="edit" data-id="${book.id}">✏️</button>
+          <button class="btn warn" data-action="delete" data-id="${book.id}">🗑️</button>
+          <button class="btn primary" data-action="borrow" data-id="${book.id}" data-title="${encodeURIComponent(book.title)}">📖</button>
+        </div></td>`;
+            tbody.appendChild(row);
+        });
+    }
+
+    function applyFilters(){
+        const q=$('searchInput').value.trim().toLowerCase();
+        const year=$('filterYear').value;
+        const filtered=BOOKS.filter(b=>{
+            const matchQ=!q || ((b.title||'')+' '+(b.author||'')+' '+(b.category||'')).toLowerCase().includes(q);
+            const matchY=!year || (String(b.publicationYear)===year);
+            return matchQ && matchY;
+        });
+        renderBooks(filtered);
+    }
+
+    function populateYearFilter(list){
+        const years=Array.from(new Set(list.map(b=>b.publicationYear).filter(Boolean))).sort((a,b)=>b-a);
+        const sel=$('filterYear');
+        sel.innerHTML='<option value="">All years</option>'+years.map(y=>`<option value="${y}">${y}</option>`).join('');
+    }
+
+    async function saveBook(){
+        const id=$('bookId').value;
+        const title=$('title').value.trim();
+        if(!title){ showToast('Title required'); return; }
+        const author=$('author').value.trim();
+        const category=$('category').value.trim();
+        const publicationYear=$('year').value || null;
+        const file=$('imageFile').files[0];
+        let imageUrl=null;
+
+        try{
+            if(file){
+                const fd=new FormData(); fd.append('file',file);
+                const upl=await fetch(API_BASE+'/upload',{method:'POST',body:fd});
+                if(!upl.ok) throw new Error('Upload failed');
+                imageUrl=await upl.text();
+            }
+
+            const payload={title,author,category,publicationYear,imageUrl};
+            const method=id?'PUT':'POST';
+            const url=id?`${API_BASE}/${id}`:API_BASE;
+            const res=await fetch(url,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+            if(!res.ok) throw new Error('Save failed');
+            const text=await res.text();
+            showToast(text||'Saved');
+            closeForm(); loadBooks();
+        }catch(e){ showToast(e.message); }
+    }
+
+    async function deleteBook(id){
+        if(!confirm('Delete this book?')) return;
+        try{
+            const res=await fetch(`${API_BASE}/${id}`,{method:'DELETE'});
+            if(!res.ok) throw new Error('Delete failed');
+            const txt=await res.text();
+            showToast(txt||'Deleted');
+            loadBooks();
+        }catch(e){ showToast(e.message); }
+    }
+
+    function goToBorrowManagement(){ location.href='borrow-admin.html'; }
+    function goToBorrow(id,title){ location.href=`borrow-admin.html?bookId=${id}&title=${encodeURIComponent(title)}`; }
+    function logout(){ localStorage.clear(); location.href='admin-login.html'; }
+    function escapeHtml(s){return s?String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'):'';}
+
+    document.addEventListener('click',e=>{
+        const btn=e.target.closest('button'); if(!btn)return;
+        if(btn.id==='addBookBtn')openForm('add');
+        if(btn.id==='closeModal'||btn.id==='cancelBtn')closeForm();
+        if(btn.id==='logoutBtn')logout();
+        if(btn.id==='borrowMgmtBtn')goToBorrowManagement();
+        if(btn.id==='saveBtn')saveBook();
+        if(btn.dataset.action==='edit'){const book=BOOKS.find(b=>String(b.id)===String(btn.dataset.id));openForm('edit',book);}
+        if(btn.dataset.action==='delete')deleteBook(btn.dataset.id);
+        if(btn.dataset.action==='borrow')goToBorrow(btn.dataset.id,decodeURIComponent(btn.dataset.title));
+    });
+
+    $('searchInput').addEventListener('input',applyFilters);
+    $('filterYear').addEventListener('change',applyFilters);
+    $('clearFilters').addEventListener('click',()=>{$('searchInput').value='';$('filterYear').value='';applyFilters();});
+    $('imageFile').addEventListener('change',e=>{
+        const f=e.target.files[0]; if(!f){hidePreview();return;}
+        const url=URL.createObjectURL(f); showPreview(url);
+    });
+
+    loadBooks();
+</script>
+</body>
+</html>
